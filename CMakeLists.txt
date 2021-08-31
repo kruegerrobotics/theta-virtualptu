@@ -8,16 +8,16 @@ pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
 pkg_check_modules(GSTREAMER-APP REQUIRED gstreamer-app-1.0)
 add_definitions(-DGST_API_VERSION_1=1)
 
-find_package(libuvc REQUIRED)
+#TODO
+#findpackage libptp2
+#findpackage libusb
+#find_package(libuvc REQUIRED)
+#find package thetacontrol
 
 set (VIRT_PTU_HEADERS
-    src/ptp-helpers.hpp
-    src/thetacontrol.hpp
-)
+  )
 
 set (VIRT_PTU_SOURCES
-    src/ptp-helpers.cpp
-    src/thetacontrol.cpp
     src/virtualptu-main.cpp
 )
 
@@ -26,17 +26,18 @@ add_library(thetauvc  src/thetauvc.h  src/thetauvc.c)
 
 add_executable(virtualptu ${VIRT_PTU_HEADERS} ${VIRT_PTU_SOURCES})
 target_include_directories(virtualptu
-    PRIVATE /home/tkrueger/funprojects/libptp2/src
+    #PRIVATE /home/tkrueger/projects/thetaV/libptp2/src
     PRIVATE ${GSTREAMER_INCLUDE_DIRS}
 )
 
-target_link_directories(virtualptu PRIVATE /home/tkrueger/funprojects/libptp2/build)
+#target_link_directories(virtualptu PRIVATE /home/tkrueger/projects/thetaV/libptp2/build)
 target_link_libraries(virtualptu
-    usb
-    ptp2
+    thetacontrol    
+    thetauvc    
     pthread
     ${GSTREAMER_LIBRARIES}
     ${GSTREAMER-APP_LIBRARIES}
-    LibUVC::UVCStatic    
-    thetauvc
+    uvc
+    usb
+    ptp2    
 )
