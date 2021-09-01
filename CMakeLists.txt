@@ -13,6 +13,7 @@ add_definitions(-DGST_API_VERSION_1=1)
 #findpackage libusb
 #find_package(libuvc REQUIRED)
 #find package thetacontrol
+#find package TCLAP
 
 set (VIRT_PTU_HEADERS
   )
