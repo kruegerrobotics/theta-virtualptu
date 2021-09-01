@@ -2,7 +2,7 @@
 
 ## Scope
 
-This project is experimental in the domain of robotics. To look around with a (remote operated) robot we have often mounted the camera on a pan and tilt unit (ptu). This units consists of 2 motors, mechanics software to control etc. The idea behind this project is to use a 360 degree camera (here the ThetaV from RICOH) to have a single unit mounted on a robot and via software we could select which segement is streamed to the user - we can not stream the the full 4K surround (even compressed) since we have often to do with bandwith restricted connections. This way we would not need a motorized unit
+This project is experimental in the domain of robotics. To look around with a (remote operated) robot we have often mounted the camera on a pan and tilt unit (ptu). This units consists of 2 motors, mechanics software to control etc. The idea behind this project is to use a 360 degree camera (here the ThetaV from RICOH) to have a single unit mounted on a robot and via software we could select which segment is streamed to the user - we can not stream the the full 4K surround (even compressed) since we have often to do with bandwidth restricted connections. This way we would not need a motorized unit
 
 This also has to be fully automated with no user interaction. For the ThetaV we need a program that:
 1. wakes the device up
@@ -11,13 +11,13 @@ This also has to be fully automated with no user interaction. For the ThetaV we 
 4. based on parameters selects a sub-section of the image
 5. encodes the sub-section and sends/displays it to the remote operator
 
-In this experimental project we want to investigate steps 1-4 and display the image locally. Especially to get *a feeling* for the latency of aquisition, decoding (with multiple decoders), and display since for remote operated robotics this is essential.
+In this experimental project we want to investigate steps 1-4 and display the image locally. Especially to get *a feeling* for the latency of acquisition, decoding (with multiple decoders), and display since for remote operated robotics this is essential.
 
-**WARNING**: this is work in progress, certain elements are hardcoded and not all works robust. We also know alreadt that with the current firmware version 3.70 of the thetaV wake up seems to be unlikely - nevertheless we want to give it a shoot and ideas etc. are welcome. 
+**WARNING**: this is work in progress, certain elements are hardcoded and not all works robust. We also know already that with the current firmware version 3.70 of the thetaV wake up seems to be unlikely - nevertheless we want to give it a shoot and ideas etc. are welcome. 
 
 ### Demo executable
 
-The generete executable takes input from a joystick and pans and tils a 640x480 image segment from the livestream and displays it and similar to pre-recorded 360 pictures or videos the user can look around in the livestream
+The generate executable takes input from a joystick and pans and titls a 640x480 image segment from the live-stream and displays it and similar to pre-recorded 360 pictures or videos the user can look around in the live-stream
 
 ## How to build
 
@@ -27,7 +27,7 @@ This project depends on other projects. In this stage we are also lacking perfec
 
 #### gstreamer
 
-This is quite a dependency, it might be good to start with, but probaly needs also the "ugly plugins" for the h264 decoder
+This is quite a dependency, it might be good to start with, but probably needs also the "ugly plugins" for the h264 decoder
 
 ``` bash
 sudo apt install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
@@ -43,7 +43,7 @@ sudo apt install libusb
 
 #### libuvc-theta
 
-This [libuvc-fork](https://github.com/ricohapi/libuvc-theta) is essential for the videostreaming from the theta. It is important to check that this program gets linked against this libuvc-theta, otherwise it will not work.
+This [libuvc-fork](https://github.com/ricohapi/libuvc-theta) is essential for the video streaming from the theta. It is important to check that this program gets linked against this libuvc-theta, otherwise it will not work.
 
 ``` bash 
 git clone https://github.com/ricohapi/libuvc-theta.git
