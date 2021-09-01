@@ -54,7 +54,7 @@ cmake ..
 make && sudo make install
 ```
 
-#### libthetacontrol and its dependecies
+#### libthetacontrol and its dependencies
 
 This [library](https://github.com/kruegerrobotics/libthetacontrol) was created (initially part of this project) to control the theta more convinietly. It comes with dependencies on its own. Please follow the instructions there as well... But in brief the would be
 
@@ -82,5 +82,15 @@ make
 sudo make install
 ```
 
+### Build this project
 
+After all dependencies are solved this project can be cloned and build with:
+
+``` bash
+git clone https://github.com/kruegerrobotics/theta-virtualptu.git
+cd theta-virtualptu
+mkdir build
+cmake ../
+make
+```
 
