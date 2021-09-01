@@ -15,17 +15,37 @@ In this experimental project we want to investigate steps 1-4 and display the im
 
 **WARNING**: this is work in progress, certain elements are hardcoded and not all works robust. We also know already that with the current firmware version 3.70 of the thetaV wake up seems to be unlikely - nevertheless we want to give it a shoot and ideas etc. are welcome. 
 
-### Demo executable
+## Demo executable
 
-The generate executable takes input from a joystick and pans and titls a 640x480 image segment from the live-stream and displays it and similar to pre-recorded 360 pictures or videos the user can look around in the live-stream
+### Objective
+
+The generate executable takes input from a joystick and pans and tilts a 640x480 image segment from the live-stream and displays it and similar to pre-recorded 360 pictures or videos the user can look around in the live-stream
+
+### How to run
+
+If the theta is connected the program can be started with
+
+``` bash
+./virtualptu
+```
+
+per default it looks for a joystick on */dev/input/js0* if another joystick should be used this can be done with specifying it in the command line e.g.
+
+``` bash
+./virtualptu -j /dev/input/js1
+```
+
+#### No joystick - no problem
+
+If not joystick is detected on the specified file descriptor then the program will enter auto-pan-mode*. It will pan continously from the left to the right and back.
 
 ## How to build
 
 This project depends on other projects. In this stage we are also lacking perfect package finding, debug and release libs (also for some dependencies) but it is on the TODO list
 
-### pre-reqrusites
+### pre-requisites
 
-#### gstreamer
+#### GStreamer
 
 This is quite a dependency, it might be good to start with, but probably needs also the "ugly plugins" for the h264 decoder
 

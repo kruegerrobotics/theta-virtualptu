@@ -4,6 +4,8 @@
 #include <iostream>
 #include <thread>
 
+#include <tclap/CmdLine.h>
+
 #include <fcntl.h>
 #include <linux/joystick.h>
 
@@ -33,10 +35,22 @@ static gboolean busCallback(GstBus *bus, GstMessage *msg, gpointer data);
 void thetaFrameCallback(uvc_frame_t *frame, void *ptr);
 
 // handling the joystick
-void joystickThreadBody(bool &abortFlag, GstElement *videoCrop);
+void joystickThreadBody(bool &abortFlag, std::string joystickFD,
+                        GstElement *videoCrop);
 
 int main(int argc, char *argv[]) {
   std::cout << "Starting virtual ptu" << std::endl;
+
+  // parse command line parameters
+  TCLAP::CmdLine cmd("Virtual Pan and Tilt", ' ', "Dev-0.9");
+  TCLAP::ValueArg<std::string> joystickFd("j", "joystickFD",
+                                          "file descriptor for the joystick",
+                                          false, "/dev/input/js0", "string");
+
+  cmd.add(joystickFd);
+  cmd.parse(argc, argv);
+
+  // create the camera object
   ThetaControl thetaCtrl("RICOH THETA V");
 
   std::cout << "Scanning usb connections to find the ricoh Theta V"
@@ -257,9 +271,9 @@ int main(int argc, char *argv[]) {
   }
 
   // joystick thread
-  std::cout << "Startin joystick thread and handling" << std::endl;
-  auto joystickThread =
-      std::thread(joystickThreadBody, std::ref(abortFlag), videocrop);
+  std::cout << "Starting joystick thread and handling" << std::endl;
+  auto joystickThread = std::thread(joystickThreadBody, std::ref(abortFlag),
+                                    joystickFd.getValue(), videocrop);
 
   // holding the main loop
   std::cout << "Pipeline running" << std::endl;
@@ -414,31 +428,65 @@ int clamp(int n, int lower, int upper) {
   return std::max(lower, std::min(n, upper));
 }
 
-void joystickThreadBody(bool &abortFlag, GstElement *videoCrop) {
+void joystickThreadBody(bool &abortFlag, std::string joystickFd,
+                        GstElement *videoCrop) {
   std::cout << "joystick thread started" << std::endl;
-  const char *device = "/dev/input/js1";
+
   struct js_event event;
   struct axis_state axes[3] = {0};
   size_t axis;
-  int js = open(device, O_RDONLY);
+
+  // values to calculate the crop
+  int xvel = 0;
+  int yvel = 0;
+  int xOffset = 0;
+  int yOffset = 600;
+  const gint totalWidth = 3840;
+  const gint totalHeight = 1920;
+  const gint width = 640;
+  const gint height = 480;
+
+  std::cout << "Opening joystick at: " << joystickFd << std::endl;
+  int js = open(joystickFd.c_str(), O_RDONLY);
   timeval timeout;
 
   if (js == -1) {
-    perror("Could not open joystick");
+    std::cout << "ERROR: Could not open joystick at: " << joystickFd
+              << std::endl;
+    std::cout << "Starting auto-pan mode " << std::endl;
+    xvel = 6;
+    while (!abortFlag) {
+      // calculate the positions
+
+      xOffset += xvel;
+      xOffset = clamp(xOffset, 0, totalWidth - width);
+      yOffset = clamp(yOffset, 0, totalHeight - height);
+      // std::cout << "x: " << xOffset << " y: " << yOffset << std::endl;
+      gint right = totalWidth - width - xOffset;
+      gint bottom = totalHeight - height - yOffset;
+
+      g_object_set(videoCrop, "left", xOffset, NULL);
+      g_object_set(videoCrop, "top", yOffset, NULL);
+      g_object_set(videoCrop, "right", right, NULL);
+      g_object_set(videoCrop, "bottom", bottom, NULL);
+
+      if (xOffset == totalWidth - width) {
+        // change direction to left turn
+        xvel = -6;
+      }
+
+      if (xOffset == 0) {
+        // change direction to right turn
+        xvel = 6;
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(32));
+    }
     return;
   }
 
   fd_set set;
 
   uint timeOutCount = 0;
-  int xvel = 0;
-  int yvel = 0;
-  int xOffset = 0;
-  int yOffset = 0;
-  const gint totalWidth = 3840;
-  const gint totalHeight = 1920;
-  const gint width = 640;
-  const gint height = 480;
 
   while (!abortFlag) {
     timeout.tv_sec = 0;
